@@ -1,1 +1,1 @@
-worker: python old.py
+worker: python CurrentDeployment.py
