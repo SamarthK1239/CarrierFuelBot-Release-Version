@@ -1,17 +1,19 @@
 from typing import Any, Dict, Tuple, Union
 from sqlalchemy import Table
-from sqlalchemy.sql.dml import Update
+from sqlalchemy.sql.dml import Delete, Update
 from sqlalchemy.sql.selectable import Select
 
 
 def build_query(table: Table, method: str, filters: Dict[str, Dict[str, Any]] = None) -> Tuple[Union[Select, Update], Dict[str, Any]]:
-    query: Union[Select, Update] = None
+    query: Union[Select, Update, Delete] = None
     method = method.lower()
 
     if method == 'select':
         query = table.select()
-    else:
+    elif method == 'update':
         query = table.update()
+    elif method == 'delete':
+        query = table.delete()
     values = {}
 
     if filters:

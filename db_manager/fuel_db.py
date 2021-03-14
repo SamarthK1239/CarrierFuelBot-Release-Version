@@ -35,6 +35,14 @@ async def insert_one_fuel(fuel_input: FuelIn) -> FuelOut:
         'id': fuel_id
     })
 
+async def delete_one_fuel(fuel_id: int) -> None:
+    query, values = build_query(fuels, 'delete', filters={
+        'equalTo': {
+            'id': int(fuel_id)
+        }
+    })
+    await db.execute(query=query, values=values)
+
 async def update_one_fuel(fuel_input: FuelIn) -> FuelOut:
     query: Update = None
     query, values = build_query(fuels, 'update', filters={
