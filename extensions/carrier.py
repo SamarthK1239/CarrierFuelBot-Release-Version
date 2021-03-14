@@ -34,7 +34,7 @@ class Carrier(commands.Cog):
         )
     
     @commands.command()
-    async def devAddCarrier(self, ctx: commands.Context):
+    async def addCarrier(self, ctx: commands.Context):
         input_fuel = await self.get_fuel_from_user(ctx)
         created_fuel = await fuel_db.insert_one_fuel(input_fuel)
 
@@ -47,8 +47,12 @@ class Carrier(commands.Cog):
         await ctx.send(embed=add_embed)
     
     @commands.command()
-    async def devUpdateCarrier(self, ctx: commands.Context):
-        await ctx.send('updateCarrierDev command')
+    async def updateCarrier(self, ctx: commands.Context):
+        input_fuel = await self.get_fuel_from_user(ctx)
+        await fuel_db.update_one_fuel(input_fuel)
+        update_embed = discord.Embed(title="Update a Carrier", description="", color=0xf1c40f)
+        update_embed.add_field(name='Completed!', value='The carrier data has been updated. Thanks!', inline=False)
+        await ctx.send(embed=update_embed)
 
 
 def setup(bot: commands.Bot):

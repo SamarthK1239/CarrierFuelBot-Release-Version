@@ -1,30 +1,38 @@
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, Union
 from sqlalchemy import Table
+from sqlalchemy.sql.dml import Update
 from sqlalchemy.sql.selectable import Select
 
-def build_query(table: Table, filters: Dict[str, Dict[str, Any]]=None) -> list:
-    query: Select = table.select()
+
+def build_query(table: Table, method: str, filters: Dict[str, Dict[str, Any]] = None) -> Tuple[Union[Select, Update], Dict[str, Any]]:
+    query: Union[Select, Update] = None
+    method = method.lower()
+
+    if method == 'select':
+        query = table.select()
+    else:
+        query = table.update()
     values = {}
 
     if filters:
         if filters.get('equalTo') != None:
-            for filter in filters['equalTo'].keys():
-                if filters['equalTo'].get(filter) != None:
-                    query = query.where(getattr(table.c, filter) == '')
-                    values[filter + '_1'] = filters['equalTo'].get(filter)
+            for filter_name in filters['equalTo'].keys():
+                if filters['equalTo'].get(filter_name) != None:
+                    query = query.where(getattr(table.c, filter_name) == '')
+                    values[filter_name + '_1'] = filters['equalTo'].get(filter_name)
 
         if filters.get('lessThan') != None:
-            for filter in filters['lessThan'].keys():
-                if filters['lessThan'].get(filter) != None:
-                    query = query.where(getattr(table.c, filter) <= '')
-                    values[filter + '_1'] = filters['lessThan'].get(filter)
+            for filter_name in filters['lessThan'].keys():
+                if filters['lessThan'].get(filter_name) != None:
+                    query = query.where(getattr(table.c, filter_name) <= '')
+                    values[filter_name + '_1'] = filters['lessThan'].get(filter_name)
 
         if filters.get('greaterThan') != None:
-            for filter in filters['greaterThan'].keys():
-                if filters['greaterThan'].get(filter) != None:
-                    query = query.where(getattr(table.c, filter) >= '')
-                    values[filter + '_1'] = filters['greaterThan'].get(filter)
-    
+            for filter_name in filters['greaterThan'].keys():
+                if filters['greaterThan'].get(filter_name) != None:
+                    query = query.where(getattr(table.c, filter_name) >= '')
+                    values[filter_name + '_1'] = filters['greaterThan'].get(filter_name)
+
     if values == {}:
         values = None
-    return str(query), dict(values)
+    return query, values

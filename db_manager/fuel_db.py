@@ -1,3 +1,5 @@
+from sqlalchemy.sql.dml import Update
+from db_manager.db_utilities import build_query
 from typing import List
 from models.fuel import FuelIn, FuelOut
 from .schemas import fuels
@@ -34,4 +36,24 @@ async def insert_one_fuel(fuel_input: FuelIn) -> FuelOut:
     })
 
 async def update_one_fuel(fuel_input: FuelIn) -> FuelOut:
-    pass
+    query: Update = None
+    query, values = build_query(fuels, 'update', filters={
+        'equalTo': {
+            'name': str(fuel_input.name),
+        }
+    })
+    query = query.values(
+        name = '',
+        fuel_level='',
+        reserves = '',
+        buy_order=''
+    )
+    values = {
+        **values,
+        **fuel_input.dict()
+    }
+    fuel_id: int = await db.execute(query=str(query), values=values)
+    return FuelOut(**{
+        **fuel_input.dict(),
+        'id': fuel_id
+    })
