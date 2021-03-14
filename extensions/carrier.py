@@ -17,8 +17,11 @@ class Carrier(commands.Cog):
         await ctx.send('Enter the fuel name')
         fuel_name: str = (await self.bot.wait_for('message', check=check)).content.strip()
 
-        await ctx.send('Enter the fuel level')
+        await ctx.send('Enter the fuel level(capacity)')
         fuel_level = int((await self.bot.wait_for('message', check=check)).content.strip())
+        if (fuel_level >=0 and fuel_level <= 100) == False:
+            await ctx.send('Not a valid fuel level! Please try again')
+            return None
 
         await ctx.send('Enter the reserves')
         reserves = float((await self.bot.wait_for('message', check=check)).content.strip())
@@ -36,6 +39,9 @@ class Carrier(commands.Cog):
     @commands.command()
     async def addCarrier(self, ctx: commands.Context):
         input_fuel = await self.get_fuel_from_user(ctx)
+        if input_fuel == None:
+            return None
+        
         created_fuel = await fuel_db.insert_one_fuel(input_fuel)
 
         created_message = f'''Added carrier {created_fuel.name} which is at {created_fuel.fuel_level}% 
@@ -49,6 +55,9 @@ class Carrier(commands.Cog):
     @commands.command()
     async def updateCarrier(self, ctx: commands.Context):
         input_fuel = await self.get_fuel_from_user(ctx)
+        if input_fuel == None:
+            return None
+            
         await fuel_db.update_one_fuel(input_fuel)
         update_embed = discord.Embed(title="Update a Carrier", description="", color=0xf1c40f)
         update_embed.add_field(name='Completed!', value='The carrier data has been updated. Thanks!', inline=False)
