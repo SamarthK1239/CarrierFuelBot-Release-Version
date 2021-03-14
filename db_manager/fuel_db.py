@@ -43,11 +43,20 @@ async def delete_one_fuel(fuel_id: int) -> None:
     })
     await db.execute(query=query, values=values)
 
-async def update_one_fuel(fuel_input: FuelIn) -> FuelOut:
+async def get_fuels_by_name(name: str) -> List[FuelOut]:
+    query, values = build_query(fuels, 'select', filters={
+        'equalTo': {
+            'name': str(name)
+        }
+    })
+    retrieved_fuels = await get_fuels(str(query), values=values)
+    return retrieved_fuels
+
+async def update_one_fuel(fuel_id: int, fuel_input: FuelIn) -> FuelOut:
     query: Update = None
     query, values = build_query(fuels, 'update', filters={
         'equalTo': {
-            'name': str(fuel_input.name),
+            'id': int(fuel_id),
         }
     })
     query = query.values(
