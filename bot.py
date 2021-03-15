@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
-DEBUG = False
-if DEBUG:
+import os
+
+if os.getenv('ENVIRONMENT') != 'production':
     load_dotenv()
 
 import discord
