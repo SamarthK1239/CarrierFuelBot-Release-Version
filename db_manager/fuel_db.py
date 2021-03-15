@@ -1,76 +1,41 @@
-from sqlalchemy.sql.dml import Update
-from db_manager.db_utilities import build_query
 from typing import List
+
+import sqlalchemy
+from constants import DATABASE_URL
 from models.fuel import FuelIn, FuelOut
-from .schemas import fuels
-from .db_connector import db
-from sqlalchemy.schema import CreateTable
+
+from .schemas import FuelTable, metadata
+
 
 async def create_fuels_table() -> None:
-    sql_statement = str(CreateTable(fuels))
-    await db.execute(sql_statement)
-
-async def get_fuels(query: str, values=None) -> List[FuelOut]:
-    mapped_fuels: List[FuelOut] = []
-    async for row in db.iterate(query=query, values=values):
-        mapped_fuels.append(FuelOut(
-            id=row[0],
-            name=str(row[1]),
-            fuel_level=int(row[2]),
-            reserves=float(row[3]),
-            buy_order=int(row[4]),
-        ))
-    return mapped_fuels
-
+    engine = sqlalchemy.create_engine(DATABASE_URL)
+    metadata.create_all(engine)
+    
 async def get_all_fuels() -> List[FuelOut]:
-    query = str(fuels.select())
-    retrieved_fuels = await get_fuels(query)
-    return retrieved_fuels
+    fuels = await FuelTable.objects.all()
+    return [
+        FuelOut(**dict(fuel)) for fuel in fuels
+    ]
 
 async def insert_one_fuel(fuel_input: FuelIn) -> FuelOut:
-    query = fuels.insert()
-    fuel_id: int = await db.execute(query=query, values=fuel_input.dict())
-    return FuelOut(**{
-        **fuel_input.dict(),
-        'id': fuel_id
-    })
+    await FuelTable.objects.create(**fuel_input.dict())
 
 async def delete_one_fuel(fuel_id: int) -> None:
-    query, values = build_query(fuels, 'delete', filters={
-        'equalTo': {
-            'id': int(fuel_id)
-        }
-    })
-    await db.execute(query=query, values=values)
+    fuel_to_delete = FuelTable(
+        id=fuel_id
+    )
+    await fuel_to_delete.delete()
 
 async def get_fuels_by_name(name: str) -> List[FuelOut]:
-    query, values = build_query(fuels, 'select', filters={
-        'equalTo': {
-            'name': str(name)
-        }
-    })
-    retrieved_fuels = await get_fuels(str(query), values=values)
+    retrieved_fuels = await FuelTable.objects.filter(name=name).all()
     return retrieved_fuels
 
 async def update_one_fuel(fuel_id: int, fuel_input: FuelIn) -> FuelOut:
-    query: Update = None
-    query, values = build_query(fuels, 'update', filters={
-        'equalTo': {
-            'id': int(fuel_id),
-        }
-    })
-    query = query.values(
-        name = '',
-        fuel_level='',
-        reserves = '',
-        buy_order=''
+    fuel_to_update = FuelTable(
+        id=fuel_id,
     )
-    values = {
-        **values,
-        **fuel_input.dict()
-    }
-    fuel_id: int = await db.execute(query=str(query), values=values)
-    return FuelOut(**{
+    await fuel_to_update.update(**fuel_input.dict())
+    return FuelOut(
+        id=fuel_id,
         **fuel_input.dict(),
-        'id': fuel_id
-    })
+    )

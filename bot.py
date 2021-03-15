@@ -3,11 +3,12 @@ DEBUG = False
 if DEBUG:
     load_dotenv()
 
-import os
 import discord
 from discord.ext import commands
+
 from db_manager import fuel_db
 from db_manager.db_connector import db
+from constants import DISCORD_TOKEN
 
 bot = commands.Bot(command_prefix=">")
 
@@ -31,7 +32,6 @@ async def fuels(ctx: commands.Context):
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for >help"))
-    await db.connect()
     # await fuel_db.create_fuels_table()
     # print('created fuels table')
     print(f'Logged in as {bot.user}')
@@ -41,4 +41,4 @@ async def on_disconnect():
     print('disconnecting')
     await db.disconnect()
         
-bot.run(str(os.getenv('DISCORD_TOKEN')))
+bot.run(DISCORD_TOKEN)

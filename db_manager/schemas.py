@@ -1,13 +1,16 @@
 import sqlalchemy
+import orm
+from .db_connector import db
 
 metadata = sqlalchemy.MetaData()
 
-fuels = sqlalchemy.Table(
-    "fuels",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, nullable=False),
-    sqlalchemy.Column("name", sqlalchemy.String(length=30), nullable=False),
-    sqlalchemy.Column("fuel_level", sqlalchemy.Integer, nullable=False),
-    sqlalchemy.Column("reserves", sqlalchemy.Float, nullable=False),
-    sqlalchemy.Column("buy_order", sqlalchemy.Integer, nullable=False),
-)
+class FuelTable(orm.Model):
+    __tablename__ = "fuels"
+    __database__ = db
+    __metadata__ = metadata
+
+    id = orm.Integer(primary_key=True)
+    name = orm.String(max_length=30)
+    fuel_level = orm.Integer(minimum=0, maximum=100)
+    reserves = orm.Float()
+    buy_order = orm.Integer()
