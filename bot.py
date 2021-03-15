@@ -32,8 +32,7 @@ async def fuels(ctx: commands.Context):
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for >help"))
-    # await fuel_db.create_fuels_table()
-    # print('created fuels table')
+    await fuel_db.create_fuels_table()
     print(f'Logged in as {bot.user}')
 
 @bot.event
