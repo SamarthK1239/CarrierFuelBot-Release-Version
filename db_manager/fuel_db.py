@@ -18,7 +18,14 @@ async def get_all_fuels() -> List[FuelOut]:
     ]
 
 async def insert_one_fuel(fuel_input: FuelIn) -> FuelOut:
-    await FuelTable.objects.create(**fuel_input.dict())
+    inserted_fuel = await FuelTable.objects.create(**fuel_input.dict())
+    return FuelOut(
+        id=inserted_fuel.id,
+        name=inserted_fuel.name,
+        fuel_level=inserted_fuel.fuel_level,
+        reserves=inserted_fuel.reserves,
+        buy_order=inserted_fuel.buy_order,
+    )
 
 async def delete_one_fuel(fuel_id: int) -> None:
     fuel_to_delete = FuelTable(
