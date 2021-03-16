@@ -13,14 +13,12 @@ The bot is meant to help manage Fleet Carrier fuel levels in the game Elite: Dan
 ```cmd
 git clone https://github.com/SamarthK1239/CarrierFuelBot-Release-Version.git
 ```
-2. Create a Heroku account and install the heroku cli
-3. Run `heroku create project-name` in the command line to generate a new project with that specific project name
-4. Populate your environment variables. These are specified in .env.example. DISCORD_TOKEN is your discord bot token which can be created at [Discord Applications](https://discord.com/developers/applications). DATABASE_URL is the url to your SQL database. An example could be `sqlite:///test.db`
-5. Install all the python packages necessary for this bot to run
+2. Populate your environment variables. These are specified in .env.example. DISCORD_TOKEN is your discord bot token which can be created at [Discord Applications](https://discord.com/developers/applications). DATABASE_URL is the url to your SQL database. An example could be `sqlite:///test.db`
+3. Install all the python packages necessary for this bot to run
 ```cmd
 pip install -r requirements.txt
 ```
-6. Run the bot with python
+4. Run the bot with python
 ```cmd
 python bot.py
 ``` 
@@ -29,8 +27,9 @@ python bot.py
 
 ### 1. Deploying to Heroku
 1. You can deploy the bot to [Heroku](https://www.heroku.com/). Steps for that can be found [here](https://devcenter.heroku.com/articles/getting-started-with-python). You can also watch [this video](https://www.youtube.com/watch?v=BPvg9bndP1U&ab_channel=TechWithTim) if you prefer a video format of the step by step instructions.
-2. If you do decide to deploy to heroku, you will need a database. You can watch [this video](https://www.youtube.com/watch?v=ffEtxbbzCKQ&ab_channel=NickBisignano) to setup heroku postgres
-3. You're all setup with heroku! Have fun with the bot!
+2. If you do decide to deploy to heroku, you will need a database. You can watch [this video](https://www.youtube.com/watch?v=ffEtxbbzCKQ&ab_channel=NickBisignano) to setup heroku postgres. You don't need to change any bot code!
+3. Go to the Settings page and add a config var called ENVIRONMENT with the value "production". The bot depends on this.
+4. You're all setup with heroku! Have fun with the bot!
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

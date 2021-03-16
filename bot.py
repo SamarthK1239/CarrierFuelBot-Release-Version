@@ -1,15 +1,9 @@
-from dotenv import load_dotenv
-import os
-
-if os.getenv('ENVIRONMENT') != 'production':
-    load_dotenv()
-
 import discord
 from discord.ext import commands
 
 from db_manager import fuel_db
 from db_manager.db_connector import db
-from constants import DISCORD_TOKEN
+from constants.environment import DISCORD_TOKEN
 
 bot = commands.Bot(command_prefix=">")
 
@@ -21,7 +15,7 @@ for extension_name in extension_names:
     bot.load_extension(extension_name)
 
 @bot.command()
-async def fuels(ctx: commands.Context):
+async def devFuels(ctx: commands.Context):
     fuels = await fuel_db.get_all_fuels()
     fuels_embed = discord.Embed(title="Carrier Fuel Levels", description="", color=0x1abc9c)
     for fuel in fuels:

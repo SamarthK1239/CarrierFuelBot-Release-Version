@@ -1,7 +1,7 @@
 from typing import List
 
 import sqlalchemy
-from constants import DATABASE_URL
+from constants.environment import DATABASE_URL
 from models.fuel import FuelIn, FuelOut
 
 from .schemas import FuelTable, metadata
@@ -35,7 +35,9 @@ async def delete_one_fuel(fuel_id: int) -> None:
 
 async def get_fuels_by_name(name: str) -> List[FuelOut]:
     retrieved_fuels = await FuelTable.objects.filter(name=name).all()
-    return retrieved_fuels
+    return [
+        FuelOut(**dict(fuel)) for fuel in retrieved_fuels
+    ]
 
 async def update_one_fuel(fuel_id: int, fuel_input: FuelIn) -> FuelOut:
     fuel_to_update = FuelTable(
