@@ -15,7 +15,7 @@ for extension_name in extension_names:
     bot.load_extension(extension_name)
 
 @bot.command()
-async def devFuels(ctx: commands.Context):
+async def fuels(ctx: commands.Context):
     fuels = await fuel_db.get_all_fuels()
     fuels_embed = discord.Embed(title="Carrier Fuel Levels", description="", color=0x1abc9c)
     for fuel in fuels:
