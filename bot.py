@@ -15,7 +15,7 @@ for extension_name in extension_names:
     bot.load_extension(extension_name)
 
 @bot.command()
-async def devFuels(ctx: commands.Context):
+async def fuels(ctx: commands.Context):
     fuels = await fuel_db.get_all_fuels_by_guild(guild_id=ctx.guild.id)
     if len(fuels) == 0:
         await ctx.send('No fuels for this server! Use the >addCarrier command to add one')

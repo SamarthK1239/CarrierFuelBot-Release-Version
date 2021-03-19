@@ -81,7 +81,7 @@ class Carrier(commands.Cog):
         )
     
     @commands.command()
-    async def devAddCarrier(self, ctx: commands.Context):
+    async def addCarrier(self, ctx: commands.Context):
         input_fuel = await self.get_fuel_from_user(
             ctx=ctx,
             mode='add',
@@ -100,7 +100,7 @@ class Carrier(commands.Cog):
         await ctx.send(embed=add_embed)
     
     @commands.command()
-    async def devUpdateCarrier(self, ctx: commands.Context):
+    async def updateCarrier(self, ctx: commands.Context):
         fuel_to_update = await self.get_fuel_from_user_by_name(ctx)
         if fuel_to_update == None:
             return None
