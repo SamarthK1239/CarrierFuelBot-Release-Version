@@ -15,8 +15,11 @@ for extension_name in extension_names:
     bot.load_extension(extension_name)
 
 @bot.command()
-async def fuels(ctx: commands.Context):
-    fuels = await fuel_db.get_all_fuels()
+async def devFuels(ctx: commands.Context):
+    fuels = await fuel_db.get_all_fuels_by_guild(guild_id=ctx.guild.id)
+    if len(fuels) == 0:
+        await ctx.send('No fuels for this server! Use the >addCarrier command to add one')
+        return None
     fuels_embed = discord.Embed(title="Carrier Fuel Levels", description="", color=0x1abc9c)
     for fuel in fuels:
         fuel_message = f'**{fuel.fuel_level}%** Capacity + **{fuel.reserves}T** stored + **{fuel.buy_order}T** Buy order'

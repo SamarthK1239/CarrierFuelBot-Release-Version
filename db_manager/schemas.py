@@ -14,3 +14,4 @@ class FuelTable(orm.Model):
     fuel_level = orm.Integer(minimum=0, maximum=100)
     reserves = orm.Float()
     buy_order = orm.Integer()
+    guild_id = orm.Integer()

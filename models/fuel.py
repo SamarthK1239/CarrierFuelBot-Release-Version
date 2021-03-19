@@ -6,6 +6,7 @@ class FuelIn(BaseModel):
     fuel_level: int
     reserves: float
     buy_order: int
+    guild_id: int
 
 class FuelOut(BaseModel):
     id: int
@@ -13,3 +14,4 @@ class FuelOut(BaseModel):
     fuel_level: int
     reserves: float
     buy_order: int
+    guild_id: int

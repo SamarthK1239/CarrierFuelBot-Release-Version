@@ -17,11 +17,15 @@ class Carrier(commands.Cog):
         await ctx.send('Enter the fuel name')
         fuel_name: str = (await self.bot.wait_for('message', check=check)).content.strip()
 
-        retrieved_fuels = await fuel_db.get_fuels_by_name(fuel_name)
+        retrieved_fuels = await fuel_db.get_fuels_by_name_and_guild(
+            name=fuel_name,
+            guild_id=ctx.guild.id
+        )
         
         if len(retrieved_fuels) == 1:
             return retrieved_fuels[0]
         elif len(retrieved_fuels) == 0:
+            await ctx.send('No carriers with that name were found!')
             return None
 
         fuels_embed = discord.Embed(title="Carrier Fuel Levels", description="", color=0x1abc9c)
@@ -41,13 +45,19 @@ class Carrier(commands.Cog):
             return None
 
     
-    async def get_fuel_from_user(self, ctx: commands.Context) -> FuelIn:
+    async def get_fuel_from_user(self, ctx: commands.Context, mode: str) -> FuelIn:
         def check(message: discord.Message):
             if ctx.author != message.author:
                 return False
             return True
 
-        await ctx.send('Enter the fuel name')
+        fuel_name_prompt: str = None
+        if mode == 'add':
+            fuel_name_prompt = 'Enter the fuel name'
+        else:
+            fuel_name_prompt = 'Enter the new fuel name'
+            
+        await ctx.send(fuel_name_prompt)
         fuel_name: str = (await self.bot.wait_for('message', check=check)).content.strip()
 
         await ctx.send('Enter the fuel level(capacity)')
@@ -67,11 +77,15 @@ class Carrier(commands.Cog):
             fuel_level=fuel_level,
             reserves=reserves,
             buy_order=buy_order,
+            guild_id=ctx.guild.id
         )
     
     @commands.command()
-    async def addCarrier(self, ctx: commands.Context):
-        input_fuel = await self.get_fuel_from_user(ctx)
+    async def devAddCarrier(self, ctx: commands.Context):
+        input_fuel = await self.get_fuel_from_user(
+            ctx=ctx,
+            mode='add',
+        )
         if input_fuel == None:
             return None
         
@@ -86,11 +100,14 @@ class Carrier(commands.Cog):
         await ctx.send(embed=add_embed)
     
     @commands.command()
-    async def updateCarrier(self, ctx: commands.Context):
+    async def devUpdateCarrier(self, ctx: commands.Context):
         fuel_to_update = await self.get_fuel_from_user_by_name(ctx)
         if fuel_to_update == None:
             return None
-        input_fuel = await self.get_fuel_from_user(ctx)
+        input_fuel = await self.get_fuel_from_user(
+            ctx=ctx,
+            mode='update',
+        )
         if input_fuel == None:
             return None
             
