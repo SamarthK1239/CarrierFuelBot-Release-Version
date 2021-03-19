@@ -18,6 +18,11 @@ class Carrier(commands.Cog):
         fuel_name: str = (await self.bot.wait_for('message', check=check)).content.strip()
 
         retrieved_fuels = await fuel_db.get_fuels_by_name(fuel_name)
+        
+        if len(retrieved_fuels) == 1:
+            return retrieved_fuels[0]
+        elif len(retrieved_fuels) == 0:
+            return None
 
         fuels_embed = discord.Embed(title="Carrier Fuel Levels", description="", color=0x1abc9c)
         for i in range(0, len(retrieved_fuels)):
