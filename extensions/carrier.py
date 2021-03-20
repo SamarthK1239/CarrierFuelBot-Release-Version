@@ -31,7 +31,9 @@ class Carrier(commands.Cog):
         fuels_embed = discord.Embed(title="Carrier Fuel Levels", description="", color=0x1abc9c)
         for i in range(0, len(retrieved_fuels)):
             fuel = retrieved_fuels[i]
-            fuel_message = f'**{fuel.fuel_level}%** Capacity + **{fuel.reserves}T** stored + **{fuel.buy_order}T** Buy order'
+            fuel_message = f"""
+            **{fuel.fuel_level}%** Capacity + **{fuel.reserves}T** stored + buying tritium: **{fuel.buy_order}T**
+            """
             fuels_embed.add_field(name=f'{i + 1}. {fuel.name}', value=fuel_message, inline=False)
     
         await ctx.send(embed=fuels_embed)
@@ -52,9 +54,9 @@ class Carrier(commands.Cog):
             return True
 
         fuel_name_prompt: str = None
-        if mode == 'add':
+        if mode.lower() == 'add':
             fuel_name_prompt = 'Enter the fuel name'
-        else:
+        elif mode.lower() == 'update':
             fuel_name_prompt = 'Enter the new fuel name'
             
         await ctx.send(fuel_name_prompt)
@@ -69,8 +71,19 @@ class Carrier(commands.Cog):
         await ctx.send('Enter the reserves')
         reserves = float((await self.bot.wait_for('message', check=check)).content.strip())
 
-        await ctx.send('Enter the buy order')
-        buy_order = int((await self.bot.wait_for('message', check=check)).content.strip())
+        response_to_bool = {
+            'y': True,
+            'n': False,
+            'yes': True,
+            'no': False,
+        }
+
+        await ctx.send('Buying tritium(y/n or yes/no)')
+        buy_order_response = str((await self.bot.wait_for('message', check=check)).content.strip()).strip().lower()
+        if buy_order_response not in response_to_bool.keys():
+            await ctx.send('Not a valid response. Please try again. You must only enter (y/n) or (yes/no)')
+            return None
+        buy_order = response_to_bool[buy_order_response]
 
         return FuelIn(
             name=fuel_name,
@@ -81,7 +94,7 @@ class Carrier(commands.Cog):
         )
     
     @commands.command()
-    async def addCarrier(self, ctx: commands.Context):
+    async def ac(self, ctx: commands.Context):
         input_fuel = await self.get_fuel_from_user(
             ctx=ctx,
             mode='add',
@@ -90,9 +103,13 @@ class Carrier(commands.Cog):
             return None
         
         created_fuel = await fuel_db.insert_one_fuel(input_fuel)
-
-        created_message = f'''Added carrier {created_fuel.name} which is at {created_fuel.fuel_level}% 
-        has {created_fuel.reserves}T in storage and a standing buy order of {created_fuel.buy_order}
+        
+        bool_to_response = {
+            True: 'Yes',
+            False: 'No',
+        }
+        created_message = f'''Added carrier **{created_fuel.name}** which is at **{created_fuel.fuel_level}**% 
+        has **{created_fuel.reserves}T** in storage and buying tritium: **{bool_to_response[created_fuel.buy_order]}**
         '''
         add_embed = discord.Embed(title="Add a Carrier", description="", color=0x1abc9c)
         add_embed.add_field(name='Added Carrier!', value=created_message, inline=False)
@@ -100,7 +117,7 @@ class Carrier(commands.Cog):
         await ctx.send(embed=add_embed)
     
     @commands.command()
-    async def updateCarrier(self, ctx: commands.Context):
+    async def uc(self, ctx: commands.Context):
         fuel_to_update = await self.get_fuel_from_user_by_name(ctx)
         if fuel_to_update == None:
             return None
@@ -115,6 +132,20 @@ class Carrier(commands.Cog):
         update_embed = discord.Embed(title="Update a Carrier", description="", color=0xf1c40f)
         update_embed.add_field(name='Completed!', value='The carrier data has been updated. Thanks!', inline=False)
         await ctx.send(embed=update_embed)
+    
+    @commands.command()
+    async def rc(self, ctx: commands.Context):
+        fuel_to_delete = await self.get_fuel_from_user_by_name(ctx)
+        if fuel_to_delete == None:
+            return None
+        delete_embed = discord.Embed(title="Delete Carrier", description="", color=0xad1457)
+        try:
+            await fuel_db.delete_one_fuel(fuel_to_delete.id)
+            delete_embed.add_field(name="Done!", value="This carrier has been deleted from the database. If this was an error, please add the carrier back using the command.", inline=False)
+        except Exception:
+            delete_embed.add_field(name="Error", value="Something went wrong, try again. If the problem persists, ping @Relic#1267", inline=False)
+        
+        await ctx.send(embed=delete_embed)
 
 
 def setup(bot: commands.Bot):
