@@ -16,7 +16,7 @@ for extension_name in extension_names:
     bot.load_extension(extension_name)
 
 @bot.command()
-async def devFuel(ctx: commands.Context):
+async def fuel(ctx: commands.Context):
     bool_to_response = {
         True: 'Yes',
         False: 'No'
