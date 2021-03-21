@@ -49,14 +49,16 @@ async def help(ctx):
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for >help"))
+    print('Connecting to database')
     await db.connect()
+    print('Finished connecting to database')
     # Will only create table if it does not exist
     await fuel_db.create_fuels_table()
-    print(f'Logged in as {bot.user}')
+    print(f'Ready and logged in as {bot.user}')
 
 @bot.event
 async def on_disconnect():
-    print('disconnecting')
+    print('disconnecting from discord and database')
     await db.disconnect()
         
 bot.run(DISCORD_TOKEN)
