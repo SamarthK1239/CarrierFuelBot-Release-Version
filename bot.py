@@ -21,7 +21,7 @@ async def fuel(ctx: commands.Context):
         True: 'Yes',
         False: 'No'
     }
-    fuels = await fuel_db.get_all_fuels_by_guild(guild_id=ctx.guild.id)
+    fuels = await fuel_db.get_all_fuels_by_guild(guild_id=str(ctx.guild.id))
     if len(fuels) == 0:
         await ctx.send('No fuels for this server! Use the >addCarrier command to add one')
         return None

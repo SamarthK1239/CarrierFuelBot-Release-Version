@@ -19,7 +19,7 @@ class Carrier(commands.Cog):
 
         retrieved_fuels = await fuel_db.get_fuels_by_name_and_guild(
             name=fuel_name,
-            guild_id=ctx.guild.id
+            guild_id=str(ctx.guild.id)
         )
         
         if len(retrieved_fuels) == 1:
@@ -90,7 +90,7 @@ class Carrier(commands.Cog):
             fuel_level=fuel_level,
             reserves=reserves,
             buy_order=buy_order,
-            guild_id=ctx.guild.id
+            guild_id=str(ctx.guild.id)
         )
     
     @commands.command()

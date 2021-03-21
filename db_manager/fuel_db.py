@@ -11,8 +11,8 @@ async def create_fuels_table() -> None:
     engine = sqlalchemy.create_engine(DATABASE_URL)
     metadata.create_all(engine)
     
-async def get_all_fuels_by_guild(guild_id: int) -> List[FuelOut]:
-    fuels = await FuelTable.objects.filter(guild_id=guild_id).all()
+async def get_all_fuels_by_guild(guild_id: str) -> List[FuelOut]:
+    fuels = await FuelTable.objects.filter(guild_id=str(guild_id)).all()
     return [
         FuelOut(**dict(fuel)) for fuel in fuels
     ]
@@ -34,8 +34,8 @@ async def delete_one_fuel(fuel_id: int) -> None:
     )
     await fuel_to_delete.delete()
 
-async def get_fuels_by_name_and_guild(name: str, guild_id: int) -> List[FuelOut]:
-    retrieved_fuels = await FuelTable.objects.filter(guild_id=guild_id).filter(name=name).all()
+async def get_fuels_by_name_and_guild(name: str, guild_id: str) -> List[FuelOut]:
+    retrieved_fuels = await FuelTable.objects.filter(guild_id=str(guild_id)).filter(name=name).all()
     return [
         FuelOut(**dict(fuel)) for fuel in retrieved_fuels
     ]
